@@ -99,3 +99,4 @@ ENV/
 
 # mypy
 .mypy_cache/
+bots/mm_bot_settings.py
