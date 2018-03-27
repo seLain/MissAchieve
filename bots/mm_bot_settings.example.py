@@ -1,3 +1,6 @@
+'''
+Mattermost settings
+'''
 PLUGINS = [
     'mm_bot_plugins'
 ]
@@ -7,3 +10,9 @@ BOT_LOGIN = 'bot@example.com'
 BOT_PASSWORD = None
 BOT_TEAM = 'devops'
 SSL_VERIFY = True
+
+'''
+MissAchieve settings
+'''
+AUTH_TOKEN = ''
+MA_SERVER_URL = ''
