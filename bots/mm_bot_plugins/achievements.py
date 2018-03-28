@@ -8,7 +8,6 @@ from mattermost_bot.utils import allow_only_direct_message
 from mm_bot_settings import AUTH_TOKEN, MA_SERVER_URL
 
 @respond_to('.*', re.IGNORECASE)
-@allow_only_direct_message()
 def response_to_all(message):
     talk_to_me_mission(message)
     keyword_mission(message)
