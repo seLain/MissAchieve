@@ -28,6 +28,9 @@ class Mission(models.Model):
 	def __str__(self):
 		return self.name if self.name else 'Mission without name.'
 
+class KeywordMission(Mission):
+	keyword = models.CharField(max_length=64)
+
 class MissionProxy(models.Model):
 	key = models.CharField(max_length=128, unique=True, default=uuid.uuid4)
 	owner = models.ForeignKey(User, on_delete=models.CASCADE)

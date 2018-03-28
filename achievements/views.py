@@ -4,8 +4,10 @@ from rest_framework.authtoken.models import Token
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import auth
 from django.contrib.auth.models import User
+from django.core import serializers
 import json
 from .models import Mission, MissionProxy
+import importlib
 
 def auth_token_validated(request):
 	try:
@@ -34,19 +36,22 @@ def create_mission(request):
 		json_data = json.loads(request.body.decode('utf-8'))
 		username = json_data['username']
 		mission_key = json_data['mission_key']
+		mission_class_name = json_data['mission_class_name']
+		mission_module_name = 'achievements.models' # fixed paramter
 		# get or create user
 		user, created = User.objects.get_or_create(username=username,
 										  		   password=username) # [TODO] the password gen algo.
-		# get mission
-		mission, created = Mission.objects.get_or_create(key=mission_key)
+		# get or create mission dynamically based on given mission class name
+		# mechanism designed specifically for extendability of mission classes in models
+		mission_module = importlib.import_module(mission_module_name)
+		mission_class = getattr(mission_module, mission_class_name)
+		mission, created = mission_class.objects.get_or_create(key=mission_key)
 		# get or create mission proxy
 		mission_proxy, created = MissionProxy.objects.get_or_create(owner=user, mission=mission)
 		# prepare and return mission info
 		args['username'] = user.username
-		args['mission_name'] = mission.name
-		args['mission_key'] = mission.key
-		args['proxy_key'] = mission_proxy.key
-		args['score'] = mission_proxy.score
+		args['mission'] = serializers.serialize("json", [mission])
+		args['mission_proxy'] = serializers.serialize("json", [mission_proxy])
 		args['created'] = created
 		args['existed'] = not created
 		return JsonResponse(args)
