@@ -7,6 +7,35 @@ from mattermost_bot.bot import respond_to
 from mattermost_bot.utils import allow_only_direct_message
 from mm_bot_settings import AUTH_TOKEN, MA_SERVER_URL
 
+@listen_to('.*', re.IGNORECASE)
+def listen_to_all(message):
+    talkman_mission(message)
+
+def talkman_mission(message):
+    # corresponding mission settings
+    mission_keys = {'94ef1f0e-13c7-429b-872a-5501244ebe55': 'Mission',
+                    '29ca2b6a-c33a-4285-9635-69eb374e576c': 'Mission'}
+    # get message content
+    username = message.get_username()
+    # try to get or create mission
+    for key in mission_keys.keys():
+        response = requests.post(MA_SERVER_URL+'/achievements/mission/create',
+                                 json={'username': username,
+                                       'mission_key': key,
+                                       'mission_class_name': mission_keys[key],
+                                       'auth_token': AUTH_TOKEN})
+        result = response.json()
+        # update score
+        if result['created'] is True or result['existed'] is True:
+            mission_proxy_json = json.loads(result['mission_proxy'])
+            response = requests.put(MA_SERVER_URL+'/achievements/mission/update',
+                                    json={'proxy_key': mission_proxy_json[0]['fields']['key'],
+                                          'score': mission_proxy_json[0]['fields']['score']+1,
+                                          'auth_token': AUTH_TOKEN})
+            result = response.json()
+            if result['badge'] is not None:
+                message.reply(result['badge'])
+
 @respond_to('.*', re.IGNORECASE)
 def response_to_all(message):
     talk_to_me_mission(message)
