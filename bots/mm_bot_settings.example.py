@@ -16,3 +16,15 @@ MissAchieve settings
 '''
 AUTH_TOKEN = ''
 MA_SERVER_URL = ''
+
+'''
+Plugin Settings
+'''
+PLUGIN_SETTINGS = {
+	'PLUGIN_FUNCTION_NAME': {
+		'missions': {
+			'MISSION_INSTANCE_KEY': 'MISSION_CLASS_NAME',
+			'MISSION_INSTANCE_KEY': 'MISSION_CLASS_NAME'
+		}
+	},
+}
