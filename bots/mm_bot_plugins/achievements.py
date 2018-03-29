@@ -10,6 +10,7 @@ from mm_bot_settings import AUTH_TOKEN, MA_SERVER_URL, PLUGIN_SETTINGS
 @listen_to('.*', re.IGNORECASE)
 def listen_to_all(message):
     talkman_mission(message)
+    mentions_mission(message)
 
 def talkman_mission(message):
     # corresponding mission settings
@@ -30,6 +31,31 @@ def talkman_mission(message):
             response = requests.put(MA_SERVER_URL+'/achievements/mission/update',
                                     json={'proxy_key': mission_proxy_json[0]['fields']['key'],
                                           'score': mission_proxy_json[0]['fields']['score']+1,
+                                          'auth_token': AUTH_TOKEN})
+            result = response.json()
+            if result['badge'] is not None:
+                message.reply(result['badge'])
+
+def mentions_mission(message):
+    # corresponding mission settings
+    mission_settings = PLUGIN_SETTINGS[inspect.stack()[0][3]]['missions']
+    # get message content
+    username = message.get_username()
+    mentions = len(message.get_mentions())
+    # try to get or create mission
+    for key in mission_settings.keys():
+        response = requests.post(MA_SERVER_URL+'/achievements/mission/create',
+                                 json={'username': username,
+                                       'mission_key': key,
+                                       'mission_class_name': mission_settings[key],
+                                       'auth_token': AUTH_TOKEN})
+        result = response.json()
+        # update score
+        if result['created'] is True or result['existed'] is True:
+            mission_proxy_json = json.loads(result['mission_proxy'])
+            response = requests.put(MA_SERVER_URL+'/achievements/mission/update',
+                                    json={'proxy_key': mission_proxy_json[0]['fields']['key'],
+                                          'score': mission_proxy_json[0]['fields']['score']+mentions,
                                           'auth_token': AUTH_TOKEN})
             result = response.json()
             if result['badge'] is not None:
