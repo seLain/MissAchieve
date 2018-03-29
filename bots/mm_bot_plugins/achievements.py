@@ -93,3 +93,15 @@ def keyword_mission(message):
             result = response.json()
             if result['badge'] is not None:
                 message.reply(result['badge'])
+
+@respond_to('my badge', re.IGNORECASE)
+def get_my_badges(message):
+    # get message content
+    username = message.get_username()
+    # try to get badges
+    response = requests.get(MA_SERVER_URL+'/achievements/badges',
+                            json={'username': username,
+                                  'auth_token': AUTH_TOKEN})
+    result = response.json()
+    # prepare reply message
+    message.reply('\n'.join([badge['success_message'] for badge in result['badges']]))

@@ -89,3 +89,26 @@ def update_mission(request):
 @api_view(['DELETE'])
 def delete_mission(request):
 	pass
+
+@api_view(['GET'])
+def get_badges(request):
+
+	# check auth token
+	if not auth_token_validated(request):
+		return HttpResponseBadRequest("Not valid access.")
+
+	args = {'badges': []} # [{'success_message':'xxx'}, ]
+
+	try:
+		json_data = json.loads(request.body.decode('utf-8'))
+		user = User.objects.get(username=json_data['username'])
+		achieved = MissionProxy.objects.filter(owner=user, achieved=True)
+		for proxy in achieved:
+			args['badges'].append({'success_message': proxy.mission.success_message})
+		return JsonResponse(args)
+	except ValueError:
+		return HttpResponseBadRequest("Not valid json data")
+	except User.DoesNotExist:
+		return HttpResponseBadRequest("Not valid user")
+	except MissionProxy.DoesNotExist:
+		return JsonResponse(args)
