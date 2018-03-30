@@ -101,3 +101,8 @@ ENV/
 .mypy_cache/
 bots/mm_bot_settings.py
 db.sqlite3
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
