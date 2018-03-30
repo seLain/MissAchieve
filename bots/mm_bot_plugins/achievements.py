@@ -41,7 +41,7 @@ def mentions_mission(message):
     mission_settings = PLUGIN_SETTINGS[inspect.stack()[0][3]]['missions']
     # get message content
     username = message.get_username()
-    mentions = len(message.get_mentions())
+    mentions = len(message.get_mentions()) if message.get_mentions() is not None else 0
     # try to get or create mission
     for key in mission_settings.keys():
         response = requests.post(MA_SERVER_URL+'/achievements/mission/create',
