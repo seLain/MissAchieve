@@ -1,6 +1,46 @@
 # MissAchieve
 A mission and achievement app built with Django
 
+## Run this App
+Simply runs conventional Django instantiation process:  
+```
+pip install -r requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+### load example fixture
+There is an example fixture in `achievements\fuxtures`. Loading the fixture by:  
+```
+python manage.py loaddata achievements-fixture.json
+```  
+**Be ware** this operation could flush your existing missions.
+
+## Deploy this App to AWS-EB
+Deployment configuration is put in `.ebextensions`. Feel free to modify as needed. Simply install `awsebcli` and follow regular EB instance creation process:
+```
+eb init
+eb create
+eb deploy
+db open
+```
+If  `02_django.config` is not modified, the default config includs:
+* Using sqlite3 as lightweight DB
+* Automatically create default administrator `admin` with password `admin`. (Please remember to login and change password immediately)
+* Automatically loads `achievements-fixture.json` as initial mission data
+
+## Run the Bots
+
+### Mattermost Bot
+
+Rename `mm_bot_settings.example` as `mm_bot_settings.py`, and configure `mm_bot_settings.py` for mattermost API connection.
+
+Installing `mattermost_bot` package first. (Please do not use `mattermost_bot` on PyPI. It's outdated and not maintained anymore.)
+
+`pip install git+https://github.com/seLain/mattermost_bot`
+
 ## Missions
 
 ### Data Model
@@ -37,12 +77,3 @@ The client code can utilize MissAchieve API `/achievements/mission/create` to cr
 
 If there are multiple MagicNumberMission instances, the same user can have them all by create multiple MissionProxy objects.
 
-## Bots
-
-### Mattermost Bot
-
-Rename `mm_bot_settings.example` as `mm_bot_settings.py`, and configure `mm_bot_settings.py` for mattermost API connection.
-
-Installing `mattermost_bot` package first.
-
-`pip install git+https://github.com/seLain/mattermost_bot`
