@@ -16,10 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework.authtoken import views
+from .views import index
 from .views import create_mission, get_mission, update_mission, delete_mission,\
                    get_badges
 
 urlpatterns = [
+    path('', index), # achievement root route
     path('api-token-auth/', views.obtain_auth_token),
     path('mission/create', create_mission),
     path('mission/get', get_mission),

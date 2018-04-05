@@ -9,6 +9,20 @@ import json
 from .models import Mission, MissionProxy
 import importlib
 
+def index(request):
+	all_missions = [{'mission': m.name,
+					 'content': m.content,
+					 'desired_score': m.desired_score
+					} for m in Mission.objects.all()]
+	achieved_missions = [{'username': m.owner.username,
+						  'mission': m.mission.name,
+						  'message': m.mission.success_message,
+						  #'date': m.achieved_date,
+						  } for m in MissionProxy.objects.filter(achieved=True)]
+	return render(request, 'achievements/index.html',
+				  {'all_missions': all_missions,
+				   'achieved_missions': achieved_missions})
+
 def auth_token_validated(request):
 	try:
 		return True if Token.objects.get(
