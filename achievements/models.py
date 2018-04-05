@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from datetime import datetime
 import uuid
 
 '''
@@ -37,14 +38,16 @@ class MissionProxy(models.Model):
 	mission = models.ForeignKey(Mission, on_delete=models.CASCADE)
 	score = models.IntegerField(default=0)
 	achieved = models.BooleanField(default=False)
+	achieved_date = models.DateTimeField(blank=True, null=True)
 
 	def evaluate(self):
 		if self.mission.meet_desired_score(self.score) and self.achieved is False:
 			self.achieved = True
+			self.achieved_date = datetime.now()
 			self.save()
 			return True
 		else:
 			return False
 
 	def __str__(self):
-		return 'A <%s> mission instance assigned to user <%s>' % (self.mission.__class__.__name__, self.owner.username)
+		return 'A <%s> mission instance assigned to user <%s>, achieved=<%s>' % (self.mission.__class__.__name__, self.owner.username, self.achieved)
