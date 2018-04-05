@@ -26,6 +26,13 @@ class Mission(models.Model):
 	def meet_desired_score(self, score):
 		return True if score >= self.desired_score else False
 
+	@property
+	def formatted_content(self):
+		try:
+			return self.content % str(self.desired_score)
+		except TypeError:
+			return self.content
+
 	def __str__(self):
 		return self.name if self.name else 'Mission without name.'
 

@@ -11,7 +11,7 @@ import importlib
 
 def index(request):
 	all_missions = [{'mission': m.name,
-					 'content': m.content,
+					 'content': m.formatted_content,
 					 'desired_score': m.desired_score
 					} for m in Mission.objects.all()]
 	achieved_missions = [{'username': m.owner.username,
